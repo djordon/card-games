@@ -1,4 +1,4 @@
-from cards import *
+from ..cards import Card, Deck
 from scipy.stats import bernoulli
 from random import randint, shuffle
 

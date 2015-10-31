@@ -30,15 +30,15 @@ class Hand(object) :
         return len(self.cards)
 
     def __getitem__(self, index):
-        if index < len(self.cards) :
+        if index < len(self.cards):
             return self.cards[index]
         raise IndexError
 
-    def receiveCard(self, card) :
+    def receiveCard(self, card):
         self.cards.append( card )
 
-    def split(self) :
-        if len(self.cards) != 2 :
+    def split(self):
+        if len(self.cards) != 2:
             print( "Cannot split, must have 2 and only 2 cards")
         elif self.cards[0].value() != self.cards[1].value() :
             print( "Cannot split, cards must have the same value")
@@ -184,7 +184,7 @@ class BlackJack(object) :
         return status
 
     def deal(self, HIDDEN = False) :
-        card = self._deck.draw() :
+        card = self._deck.draw()
         if HIDDEN == False :
             self._known_cards  += card.index
         return card
@@ -216,11 +216,11 @@ class BlackJack(object) :
                             sblh    = hand.value()[0]
                         else :
                             sblh    = hand.value()[1]
-                        player.add_data( win_loss_draw=(1,0,0), total=sblh, self._dealer.hand[1] )
+                        player.add_data( win_loss_draw=(1,0,0), total=sblh, whatever=self._dealer.hand[1] )
                     else :
                         hand.cards.pop()
                         sblh    = hand.value()[0]
-                        player.add_data( win_loss_draw=(0,1,0), total=sblh, self._dealer.hand[1] )
+                        player.add_data( win_loss_draw=(0,1,0), total=sblh, whatever=self._dealer.hand[1] )
 
 
     def playHand(self, player, hand, splitCount = 0) :
