@@ -23,30 +23,31 @@ ALL_CARDS = {
     'ace'   : 12
 }
 
+ALL_SUITS_MAP = {val: key for key, val in ALL_SUITS.items()}
+ALL_CARDS_MAP = {val: key for key, val in ALL_CARDS.items()}
+
 
 class Card(object):
 
     def __init__(self, rank, suit):
-        if isinstance(suit, numbers.Integral):
-            if suit >= 4:
-                raise RuntimeError('Improper suit')
-            else:
-                self._suit = suit
-        elif isinstance(suit, str):
-            self._suit = ALL_SUITS[suit.lower()]
-                    
-        if isinstance(rank, numbers.Integral):
-            if rank >= 13:
-                raise RuntimeError('Improper rank')
-            else :
-                self._rank = rank
-        elif isinstance(rank, str):
-            self._rank = ALL_CARDS[rank.lower()]
+        self._suit = suit
+        self._rank = rank
 
-        self.index = np.zeros((13, 5), int)
-        self.index[rank, 0] = 1
-        self.index[rank, suit + 1] = 1
-        
+    @property
+    def suit(self):
+        return ALL_SUITS_MAP[self._suit]
+
+    @property
+    def rank(self):
+        return ALL_CARDS_MAP[self._rank]
+
+    @property
+    def index(self):
+        index = np.zeros((13, 5), int)
+        index[self._rank, 0] = 1
+        index[self._rank, self._suit + 1] = 1
+        return index
+
     def __str__(self) :
         return "{0} of {1}".format(self.rank, self.suit)
 
@@ -56,43 +57,26 @@ class Card(object):
     def value(self) :
         if self._rank <= 8:
             thevalue = self._rank + 2
-        elif (self._rank > 8) and (self._rank <= 11) :
+        elif 8 < self._rank <= 11:
             thevalue = 10
         else :
             thevalue = 1
         return thevalue
 
 
-    @property
-    def suit(self):
-        return list(ALL_SUITS.keys())[self._suit]
-
-    @property
-    def rank(self):
-        return list(ALL_CARDS.keys())[self._rank]
-
-
 class Deck(object) :
     """ A deck of cards. Can also be multiple decks or cards """
     def __init__(self, num_decks=1):
-        self._cards_remaining = num_decks * 52
+        self.cards_remaining = num_decks * 52
 
-        self._nDecks     = num_decks
+        self.nDecks      = num_decks
         self._deck_index = np.ones((13, 5), int)
 
         self._deck_index[:, 0]  = 4 * num_decks
         self._deck_index[:, 1:] = num_decks
 
     def __repr__(self):
-        return '<Deck: Contains {0} 52-card deck(s)>'.format(self._nDecks)
-
-    @property
-    def cards_remaining(self):
-        return self._cards_remaining
-
-    @property
-    def nDecks(self):
-        return self._nDecks
+        return '<Deck: Contains {0} 52-card deck(s)>'.format(self.nDecks)
 
     def status(self):
         status = (
@@ -110,24 +94,24 @@ class Deck(object) :
             'Q : {11} \n'
             'K : {12} \n'
             'A : {13}')
-        return status.format(self._cards_remaining,  *self._deck_index[:, 0])
+        print(status.format(self.cards_remaining,  *self._deck_index[:, 0]))
 
     def shuffle(self):
-        self._cards_remaining   = self._nDecks * 52
+        self.cards_remaining   = self.nDecks * 52
         self._deck_index        = np.ones((13, 5), int)
-        self._deck_index[:, 0]  = self._nDecks * 4
-        self._deck_index[:, 1:] = self._nDecks
+        self._deck_index[:, 0]  = self.nDecks * 4
+        self._deck_index[:, 1:] = self.nDecks
         return
 
     def draw(self, n=1, quiet=False):
         cards = []
 
         for k in range(n):
-            if self._cards_remaining == 0:
+            if self.cards_remaining == 0:
                 print("No more cards in Deck, shuffling")
                 self.shuffle()
 
-            r_probs = self._deck_index[:, 0] / self._cards_remaining
+            r_probs = self._deck_index[:, 0] / self.cards_remaining
             rank    = np.random.multinomial(1, r_probs)
             rank    = rank.argmax()
 
@@ -138,7 +122,7 @@ class Deck(object) :
             self._deck_index[rank, 0]      -= 1
             self._deck_index[rank, suit+1] -= 1
 
-            self._cards_remaining -= 1
+            self.cards_remaining -= 1
 
             if not quiet:
                 cards.append(Card(rank, suit))
