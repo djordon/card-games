@@ -63,6 +63,8 @@ class Card(object):
             thevalue = 1
         return thevalue
 
+    def crazy_changes(self):
+        pass
 
 class Deck(object) :
     """ A deck of cards. Can also be multiple decks or cards """
